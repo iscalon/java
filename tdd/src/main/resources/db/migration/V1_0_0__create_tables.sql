@@ -1,0 +1,8 @@
+--CREATE TABLE IF NOT EXISTS game (
+-- id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+-- player_id BIGINT NOT NULL,
+-- FOREIGN KEY (player_id) REFERENCES player(id),
+-- word TEXT NOT NULL,
+-- attempt_number BIGINT NOT NULL DEFAULT 0,
+-- game_over BOOLEAN NOT NULL DEFAULT false
+--);
