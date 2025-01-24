@@ -1,4 +1,4 @@
-package fr.nico.neural.network.one.square;
+package fr.nico.neural.network.one.data.normalize;
 
 import java.util.Set;
 import org.springframework.boot.ApplicationArguments;

@@ -2,6 +2,7 @@ package fr.nico.neural.network.one.shared;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import fr.nico.neural.network.one.application.shared.DataNormalizer;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-package fr.nico.neural.network.one.shared;
+package fr.nico.neural.network.one.application.shared;
 
 import java.util.Arrays;
 import java.util.List;

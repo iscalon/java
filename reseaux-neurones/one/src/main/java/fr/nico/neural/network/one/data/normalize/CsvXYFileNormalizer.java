@@ -1,6 +1,6 @@
-package fr.nico.neural.network.one.square;
+package fr.nico.neural.network.one.data.normalize;
 
-import fr.nico.neural.network.one.shared.DataNormalizer;
+import fr.nico.neural.network.one.application.shared.DataNormalizer;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -95,7 +95,7 @@ public class CsvXYFileNormalizer {
   private static CSVParser getCSVFile(String fileNameToNormalize) throws IOException {
     File file =
         new ClassPathResource(
-                "input/" + fileNameToNormalize, Sample2DataNormalizer.class.getClassLoader())
+                "input/" + fileNameToNormalize, CsvXYFileNormalizer.class.getClassLoader())
             .getFile();
     return CSV_FORMAT.parse(new FileReader(file));
   }
