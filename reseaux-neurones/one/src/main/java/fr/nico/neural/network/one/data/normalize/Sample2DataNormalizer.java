@@ -1,8 +1,6 @@
 package fr.nico.neural.network.one.data.normalize;
 
 import java.util.Set;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,7 +8,7 @@ import org.springframework.stereotype.Component;
  * f(x)=x^2
  */
 @Component
-public class Sample2DataNormalizer implements ApplicationRunner {
+public class Sample2DataNormalizer {
 
   // On fixe les valeurs inférieures et supérieures que peut prendre X dans l'échantillon de données
   private static final double COLONNE_X_VALEUR_INFERIEURE = 0;
@@ -31,8 +29,7 @@ public class Sample2DataNormalizer implements ApplicationRunner {
           COLONNE_Y_VALEUR_INFERIEURE,
           COLONNE_Y_VALEUR_SUPERIEURE);
 
-  @Override
-  public void run(ApplicationArguments args) {
+  public void normalizeTrainAndTestFiles() {
     Set.of(RESSOURCES_ENTRAINEMENT_RESEAU, RESSOURCES_TEST_RESEAU)
         .forEach(FILE_NORMALIZER::normalizeFile);
   }

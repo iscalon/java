@@ -1,13 +1,17 @@
 package fr.nico.neural.network.one;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 @SpringBootApplication
 public class OneApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(OneApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplicationBuilder builder = new SpringApplicationBuilder(OneApplication.class);
 
+    // Pour pouvoir afficher les fenêtres graphiques Swing
+    builder.headless(false);
+
+    builder.run(args);
+  }
 }
