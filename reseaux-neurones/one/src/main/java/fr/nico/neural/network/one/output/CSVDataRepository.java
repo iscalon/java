@@ -15,7 +15,9 @@ import org.encog.persist.EncogDirectoryPersistence;
 import org.encog.util.csv.CSVFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
+@Component
 class CSVDataRepository implements DataRepository<BasicNetwork> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(CSVDataRepository.class);

@@ -2,16 +2,14 @@ package fr.nico.neural.network.one.graphic;
 
 import fr.nico.neural.network.one.application.out.XYGraphicDisplay;
 import fr.nico.neural.network.one.application.shared.XYGraphProperties;
+import fr.nico.neural.network.one.application.shared.XYSerieProperties;
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Locale;
 import javax.swing.*;
-import org.knowm.xchart.BitmapEncoder;
-import org.knowm.xchart.SwingWrapper;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYChartBuilder;
+import org.knowm.xchart.*;
 import org.knowm.xchart.demo.charts.ExampleChart;
 import org.knowm.xchart.style.Styler;
 import org.knowm.xchart.style.XYStyler;
@@ -36,8 +34,10 @@ class XYSampleChart implements XYGraphicDisplay, ExampleChart<XYChart> {
   }
 
   @Override
-  public void addXYSeries(String serieName, List<Double> xValues, List<Double> yValues) {
-    getChart().addSeries(serieName, xValues, yValues);
+  public void addXYSerie(String serieName, List<Double> xValues, List<Double> yValues, XYSerieProperties properties) {
+    XYSeries series = getChart().addSeries(serieName, xValues, yValues);
+    series.setLineColor(properties.color());
+    series.setLineStyle(properties.stroke());
   }
 
   @Override
@@ -47,6 +47,7 @@ class XYSampleChart implements XYGraphicDisplay, ExampleChart<XYChart> {
 
   @Override
   public void display() {
+    LOGGER.info("Affichage du graphique à l'écran...");
     Thread.ofPlatform()
         .start(() -> waitUntilFrameIsClosed(new SwingWrapper<>(getChart()).displayChart()));
   }
