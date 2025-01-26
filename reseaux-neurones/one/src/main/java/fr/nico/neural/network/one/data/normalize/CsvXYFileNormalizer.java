@@ -92,11 +92,29 @@ public class CsvXYFileNormalizer {
     return records.stream().map(r -> r.get(1)).map(Double::parseDouble).toList();
   }
 
-  private static CSVParser getCSVFile(String fileNameToNormalize) throws IOException {
-    File file =
-        new ClassPathResource(
-                "input/" + fileNameToNormalize, CsvXYFileNormalizer.class.getClassLoader())
-            .getFile();
+  /**
+   * Récupère un parseur de fichier CSV sur le fichier ayant le nom passé en paramètre situé dans le
+   * dossier : {@code resources/input}
+   *
+   * @param fileName
+   * @return
+   * @throws IOException
+   */
+  private static CSVParser getCSVFile(String fileName) throws IOException {
+    File file = getFile(fileName);
     return CSV_FORMAT.parse(new FileReader(file));
+  }
+
+  /**
+   * Récupère le fichier ayant le nom passé en paramètre situé dans le dossier : {@code
+   * resources/input}
+   *
+   * @param fileName
+   * @return
+   * @throws IOException
+   */
+  public static File getFile(String fileName) throws IOException {
+    return new ClassPathResource("input/" + fileName, CsvXYFileNormalizer.class.getClassLoader())
+        .getFile();
   }
 }
