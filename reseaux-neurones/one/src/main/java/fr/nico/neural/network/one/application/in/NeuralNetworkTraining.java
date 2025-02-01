@@ -106,7 +106,8 @@ class NeuralNetworkTraining implements NeuralNetworkTrainUseCase {
     if (!train(network, dataSet)) {
       return false;
     }
-    networks.saveNetwork(dataSetProperties.fileName() + "_SAVED", network);
+    String networkResults = networks.saveNetwork(dataSetProperties.fileName() + "_SAVED", network);
+    LOGGER.debug("Réseau calculé : {}{}", System.lineSeparator(), networkResults);
 
     computeGraphics(network, dataSet, dataSetProperties);
     return true;

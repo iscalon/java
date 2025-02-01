@@ -7,7 +7,7 @@ public interface DataRepository<N> {
 
   MLDataSet readDataSet(DataSetProperties properties);
 
-  void saveNetwork(String networkFileName, N network);
+  String saveNetwork(String networkFileName, N network);
 
   N loadNetwork(String networkFileName);
 }

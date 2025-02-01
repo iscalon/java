@@ -13,13 +13,13 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 @Component
-class NeuralNetworkStarter implements ApplicationRunner {
+class NeuralNetworkTrainingStarter implements ApplicationRunner {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(NeuralNetworkStarter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(NeuralNetworkTrainingStarter.class);
 
   private final NeuralNetworkTrainUseCase trainers;
 
-  NeuralNetworkStarter(NeuralNetworkTrainUseCase trainers) {
+  NeuralNetworkTrainingStarter(NeuralNetworkTrainUseCase trainers) {
     this.trainers = requireNonNull(trainers);
   }
 

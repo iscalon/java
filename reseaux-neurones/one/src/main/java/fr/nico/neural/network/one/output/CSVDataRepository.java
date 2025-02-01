@@ -6,6 +6,7 @@ import fr.nico.neural.network.one.application.out.DataRepository;
 import fr.nico.neural.network.one.application.shared.DataSetProperties;
 import java.io.File;
 import java.nio.file.Files;
+import java.util.stream.Collectors;
 import org.encog.ml.data.MLDataSet;
 import org.encog.ml.data.buffer.MemoryDataLoader;
 import org.encog.ml.data.buffer.codec.CSVDataCODEC;
@@ -45,11 +46,13 @@ class CSVDataRepository implements DataRepository<BasicNetwork> {
   }
 
   @Override
-  public void saveNetwork(String networkFileName, BasicNetwork network) {
+  public String saveNetwork(String networkFileName, BasicNetwork network) {
     try {
       File outputFile = Files.createTempFile(networkFileName, ".network").toFile();
       EncogDirectoryPersistence.saveObject(outputFile, network);
       LOGGER.info("Réseau sauvegardé dans le fichier : {}", outputFile);
+      return Files.readAllLines(outputFile.toPath()).stream()
+          .collect(Collectors.joining(System.lineSeparator()));
     } catch (Exception e) {
       throw new IllegalArgumentException(
           "Problème lors de la sauvegarde du réseau dans le fichier : " + networkFileName, e);
