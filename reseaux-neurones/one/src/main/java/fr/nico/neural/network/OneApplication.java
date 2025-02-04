@@ -1,4 +1,4 @@
-package fr.nico.neural.network.one;
+package fr.nico.neural.network;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

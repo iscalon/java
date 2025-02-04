@@ -5,7 +5,6 @@ import static java.util.Objects.requireNonNull;
 import fr.nico.neural.network.one.application.in.NeuralNetworkTestUseCase;
 import fr.nico.neural.network.one.application.shared.Interval;
 import fr.nico.neural.network.one.application.shared.NetworkProperties;
-import java.util.Arrays;
 import java.util.function.UnaryOperator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ class NeuralNetworkTestingStarter implements ApplicationRunner {
   @Override
   public void run(ApplicationArguments args) throws Exception {
     String[] sourceArgs = args.getSourceArgs();
-    if (Arrays.asList(sourceArgs).contains("train-network")) {
+    if (!"train-network".equals(sourceArgs[0])) {
       LOGGER.info("Pas de test du réseau, il est en cours d'entrainement");
       return;
     }
