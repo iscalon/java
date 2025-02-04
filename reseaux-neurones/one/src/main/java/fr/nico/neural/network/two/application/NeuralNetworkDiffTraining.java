@@ -196,8 +196,8 @@ public class NeuralNetworkDiffTraining {
 
     // La couche INPUT
     createInputLayer(network, inputSize);
-    // 7 couches cachées de 5 neurones chacune
-    createHiddenLayer(network, 14, 28);
+    // 7 couches cachées de 60 neurones chacune
+    createHiddenLayer(network, 7, 60);
     // La couche OUTPUT
     createOutputLayer(network, outputSize);
 
