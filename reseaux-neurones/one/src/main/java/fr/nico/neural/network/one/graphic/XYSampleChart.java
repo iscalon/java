@@ -17,7 +17,7 @@ import org.knowm.xchart.style.colors.ChartColor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class XYSampleChart implements XYGraphicDisplay, ExampleChart<XYChart> {
+public class XYSampleChart implements XYGraphicDisplay, ExampleChart<XYChart> {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(XYSampleChart.class);
 
@@ -28,7 +28,7 @@ class XYSampleChart implements XYGraphicDisplay, ExampleChart<XYChart> {
 
   private XYChart chart;
 
-  XYSampleChart(XYGraphProperties graphProperties) {
+  public XYSampleChart(XYGraphProperties graphProperties) {
     this.graphProperties = graphProperties;
     this.chartName = graphProperties.graphicName();
   }
