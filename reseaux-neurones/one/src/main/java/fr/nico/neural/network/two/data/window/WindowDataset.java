@@ -22,21 +22,26 @@ public class WindowDataset {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(WindowDataset.class);
 
-  private static final int WINDOW_SIZE = 6;
-  private static final int NORMALIZED_DATA_INDEX = 2;
+  private static final CSVFormat CSV_FORMAT =
+      CSVFormat.Builder.create().setHeader("-").setSkipHeaderRecord(true).setDelimiter(';').get();
+
+  private final int windowSize;
+  private final int dataIndex;
 
   private WindowDataset() {
-    // just to hide it
+    this(6, 2);
   }
 
-  private static final CSVFormat CSV_FORMAT =
-      CSVFormat.Builder.create()
-          .setHeader("1 € en yens;DELTA [-30,30];DELTA [-1,1]")
-          .setSkipHeaderRecord(true)
-          .setDelimiter(';')
-          .get();
+  private WindowDataset(int windowSize, int dataIndex) {
+    this.windowSize = windowSize;
+    this.dataIndex = dataIndex;
+  }
 
-  public static void createDatasetFileFrom(String inputFile) {
+  public static WindowDataset of(int windowSize, int dataIndex) {
+    return new WindowDataset(windowSize, dataIndex);
+  }
+
+  public void createDatasetFileFrom(String inputFile) {
     LOGGER.info(
         "Démarrage de la création des fenêtres servant de dataset des données du fichier : {}",
         inputFile);
@@ -75,13 +80,13 @@ public class WindowDataset {
     return CSV_FORMAT.parse(new FileReader(file));
   }
 
-  private static Collection<? extends List<String>> creerFenetres(List<CSVRecord> records) {
-    int iterationCount = records.size() - WINDOW_SIZE;
+  public Collection<? extends List<String>> creerFenetres(List<CSVRecord> records) {
+    int iterationCount = records.size() - windowSize;
     List<List<String>> result = new ArrayList<>();
     for (int iteration = 0; iteration < iterationCount; iteration++) {
       List<String> inputsAndOutput =
-          records.subList(iteration, iteration + WINDOW_SIZE + 1).stream()
-              .map(r -> r.get(NORMALIZED_DATA_INDEX))
+          records.subList(iteration, iteration + windowSize + 1).stream()
+              .map(r -> r.get(dataIndex))
               .toList();
       result.add(inputsAndOutput);
     }
@@ -90,6 +95,8 @@ public class WindowDataset {
   }
 
   public static void main(String[] args) {
-    WindowDataset.createDatasetFileFrom("TauxMoyens_06-1998_01-2025.csv");
+    WindowDataset.of(6, 2).createDatasetFileFrom("TauxMoyens_06-1998_01-2025.csv");
+    WindowDataset.of(4, 1).createDatasetFileFrom("Prix_Maisons_Appartements_2011-2024.csv");
+    WindowDataset.of(4, 2).createDatasetFileFrom("Prix_Maisons_Appartements_2011-2024.csv");
   }
 }
