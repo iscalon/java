@@ -1,10 +1,7 @@
 package fr.nico.neural.network.one.data.normalize;
 
 import fr.nico.neural.network.one.application.shared.DataNormalizer;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.util.List;
 import org.apache.commons.csv.CSVFormat;
@@ -113,8 +110,12 @@ public class CsvXYFileNormalizer {
    * @return
    * @throws IOException
    */
-  public static File getFile(String fileName) throws IOException {
-    return new ClassPathResource("input/" + fileName, CsvXYFileNormalizer.class.getClassLoader())
-        .getFile();
+  public static File getFile(String fileName) {
+    try {
+      return new ClassPathResource("input/" + fileName, CsvXYFileNormalizer.class.getClassLoader())
+          .getFile();
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
   }
 }
