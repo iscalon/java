@@ -2,6 +2,7 @@ package fr.nico.neural.network.djl.preliminaries.linearalgebra;
 
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDManager;
+import ai.djl.ndarray.types.DataType;
 import ai.djl.ndarray.types.Shape;
 import com.google.common.primitives.Booleans;
 import java.util.Objects;
@@ -35,9 +36,9 @@ public class Matrix {
         assert matrixA.get(1).get(2).contentEquals(6);
 
         // La forme de A ∈ Rm×n est : (m, n) ou m x n
-        Shape shape = matrixA.getShape();
-        assert shape.get(0) == m;
-        assert shape.get(1) == n;
+        Shape matrixAShape = matrixA.getShape();
+        assert matrixAShape.get(0) == m;
+        assert matrixAShape.get(1) == n;
 
         // La transposée de A est notée A⊤ et si B = A⊤, alors bij=aji pour tous les i et j.
         // Par conséquent la transposée de A est une matrice n×m
@@ -48,7 +49,7 @@ public class Matrix {
         // ]
         NDArray transposeeA = matrixA.transpose();
         assert transposeeA.get(1).get(2).contentEquals(9);
-        shape = transposeeA.getShape();
+        Shape shape = transposeeA.getShape();
         assert shape.get(0) == n;
         assert shape.get(1) == m;
 
@@ -106,7 +107,7 @@ public class Matrix {
         assert Objects.deepEquals(matrixARowsMean.toFloatArray(), new float[] {8, 9, 10, 11});
         assert matrixA
             .sum(ROW_AXIS)
-            .div(matrixA.getShape().get(0) /* m */)
+            .div(matrixAShape.get(0) /* m */)
             .contentEquals(matrixARowsMean);
 
         // ============= Somme non-réduction
@@ -162,7 +163,45 @@ public class Matrix {
                 matrixAColsCumSum
                     .transpose()
                     .get(n - 1 /* dernière ligne de la transposée = dernière colonne de A */));
-      }
-    }
+
+        // ======== Produit matriciel
+        NDArray matrixAfloat = manager.zeros(matrixAShape, DataType.FLOAT32);
+        matrixA.copyTo(matrixAfloat);
+        matrixB = manager.ones(new Shape(matrixAShape.get(1), 3), DataType.FLOAT32);
+        log.info("A : {}\nB : {}", matrixAfloat, matrixB);
+        // A =
+        // [[ 0.,  1.,  2.,  3.],
+        //  [ 4.,  5.,  6.,  7.],
+        //  [ 8.,  9., 10., 11.],
+        //  [12., 13., 14., 15.],
+        //  [16., 17., 18., 19.],
+        // ]
+        // B =
+        // [[1., 1., 1.],
+        //  [1., 1., 1.],
+        //  [1., 1., 1.],
+        //  [1., 1., 1.],
+        // ]
+        log.info("A.B = {}", matrixAfloat.dot(matrixB));
+        // [[ 6.,  6.,  6.],
+        //  [22., 22., 22.],
+        //  [38., 38., 38.],
+        //  [54., 54., 54.],
+        //  [70., 70., 70.],
+        // ]
+
+        // =============== norme L2 (distance euclidienne)
+        NDArray vector = manager.arange(4f);
+        assert l2NormValue(vector) == 3.7416575f;
+      } // end matrixA
+    } // end manager
+  } // end main
+
+  private static float l2NormValue(NDArray vector) {
+    return l2Norm(vector).toFloatArray()[0];
+  }
+
+  private static NDArray l2Norm(NDArray vector) {
+    return ((vector.pow(2)).sum()).sqrt();
   }
 }
