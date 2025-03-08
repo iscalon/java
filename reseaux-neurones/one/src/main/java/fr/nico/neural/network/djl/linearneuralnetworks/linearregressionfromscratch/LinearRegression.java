@@ -4,7 +4,6 @@ import ai.djl.engine.Engine;
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDList;
 import ai.djl.ndarray.NDManager;
-import ai.djl.ndarray.index.NDIndex;
 import ai.djl.ndarray.types.DataType;
 import ai.djl.ndarray.types.Shape;
 import ai.djl.training.GradientCollector;
@@ -45,9 +44,11 @@ public class LinearRegression {
     try (NDManager manager = NDManager.newBaseManager()) {
 
       DataPoints dp = syntheticData(manager, manager.create(W), B, DATASET_SIZE);
-      NDArray features = dp.getXVector();
+      NDArray features = dp.getX();
       NDArray labels = dp.getY();
 
+      int batchSize = 10;
+      /*
       log.info(
           "Exemple de caractéristiques : [{}, {}]",
           features.get(0).getFloat(0),
@@ -60,7 +61,6 @@ public class LinearRegression {
       scatterPlot(features.get(new NDIndex(":, 1")).toFloatArray(), labels.toFloatArray());
 
       // ========== Lecture du dataset
-      int batchSize = 10;
 
       ArrayDataset dataset =
           new ArrayDataset.Builder()
@@ -77,10 +77,15 @@ public class LinearRegression {
       // y ∈ R1×10
       // Don't forget to close the batch!
       batch.close();
+      */
 
       // ============ Initialisation des paramètres du modèle (b et w)
       NDArray w = manager.randomNormal(MEAN, STANDARD_DEVIATION, new Shape(2, 1), DataType.FLOAT32);
+      // w: [[0.0013],
+      //     [0.0072],
+      //    ]
       NDArray b = manager.zeros(new Shape(1));
+      // b: [0]
       NDList params = new NDList(w, b);
 
       // =================== Entrainement
@@ -91,11 +96,11 @@ public class LinearRegression {
   /**
    * Algo d'optimisation de l'erreur :
    *
-   * <p>w ← w−nu/|B|*∂w(loss(w,b))
+   * <p>w ← w−η/|B|*∂w(loss(w,b))
    *
-   * <p>b ← b−ηu/|B|*∂b(loss(w,b))
+   * <p>b ← b−η/|B|*∂b(loss(w,b))
    *
-   * <p>(nu = learning rate, |B| = batch size)
+   * <p>(η = learning rate, |B| = batch size)
    */
   public static void stochasticGradientDescent(NDList params, float learninRate, int batchSize) {
     for (NDArray param : params) {
@@ -135,21 +140,50 @@ public class LinearRegression {
       param.setRequiresGradient(true);
     }
 
+    NDArray trueW = manager.create(W);
     for (int epoch = 0; epoch < numEpochs; epoch++) {
       // Assuming the number of examples can be divided by the batch size, all
       // the examples in the training dataset are used once in one epoch
       // iteration. The features and tags of minibatch examples are given by X
       // and y respectively.
-      NDArray w = params.get(0);
-      NDArray trueW = manager.create(W);
-      NDArray b = params.get(1);
       for (Batch batch : dataset.getData(manager)) {
         NDArray x = batch.getData().head();
+        log.info("X = {}", x);
         NDArray y = batch.getLabels().head();
+        log.info("y = {}", y);
 
         try (GradientCollector gc = Engine.getInstance().newGradientCollector()) {
           // Minibatch loss in X and y
-          NDArray losses = squaredLoss(linreg(x, w, b), y);
+          NDArray w = params.get(0);
+          log.info("w = {}", w);
+          NDArray b = params.get(1);
+          log.info("b = {}", b);
+
+          // y calculé = X.w+b
+          // y calculé =
+          // [[x11,  x12],
+          //  [x21,  x22],
+          //  ...
+          //  [x91,  x92],
+          //  [x101, x102],
+          // ]
+          //        ⊤
+          // [[w1],
+          //  [w2]
+          // ]
+          //        +
+          // b
+          //
+          // = [[x11.w1 + x12.w2 + b],
+          //    [x21.w1 + x22.w2 + b],
+          //       ...
+          //    [x91.w1 + x92.w2 + b]
+          //    [x101.w1 + x102.w2 + b]
+          //   ]
+          NDArray yCalcule = linreg(x, w, b);
+          log.info("y calculé = {}", yCalcule);
+          NDArray losses = squaredLoss(yCalcule, y);
+          log.info("Perte : {}", losses);
           gc.backward(losses); // Compute gradient on losses with respect to w and b
         }
         stochasticGradientDescent(
@@ -157,6 +191,8 @@ public class LinearRegression {
 
         batch.close();
       }
+      NDArray w = params.get(0);
+      NDArray b = params.get(1);
       NDArray trainL = squaredLoss(linreg(features, w, b), labels);
       log.info("epoch {}, loss {}", epoch + 1, trainL.mean().getFloat());
       float[] wCalcule = trueW.sub(w.reshape(trueW.getShape())).toFloatArray();
@@ -168,7 +204,7 @@ public class LinearRegression {
   /**
    * Définition du modèle :
    *
-   * <p>w.x+b
+   * <p>x.w+b
    */
   public static NDArray linreg(NDArray x, NDArray w, NDArray b) {
     return x.dot(w).add(b);
@@ -203,11 +239,11 @@ public class LinearRegression {
 
   @Getter
   public static class DataPoints {
-    private final NDArray xVector;
+    private final NDArray x;
     private final NDArray y;
 
-    public DataPoints(NDArray xVector, NDArray y) {
-      this.xVector = xVector;
+    public DataPoints(NDArray x, NDArray y) {
+      this.x = x;
       this.y = y;
     }
   }
