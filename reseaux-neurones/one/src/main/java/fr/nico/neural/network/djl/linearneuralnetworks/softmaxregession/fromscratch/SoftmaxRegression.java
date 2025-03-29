@@ -1,4 +1,4 @@
-package fr.nico.neural.network.djl.linearneuralnetworks.softmaxregressionfromscratch;
+package fr.nico.neural.network.djl.linearneuralnetworks.softmaxregession.fromscratch;
 
 import static fr.nico.neural.network.djl.linearneuralnetworks.imageclassificationdataset.MNISTDataset.getFashionMnistLabels;
 
@@ -17,7 +17,7 @@ import ai.djl.training.dataset.Dataset;
 import ai.djl.translate.TranslateException;
 import fr.nico.neural.network.djl.Animator;
 import fr.nico.neural.network.djl.linearneuralnetworks.imageclassificationdataset.MNISTDataset;
-import fr.nico.neural.network.djl.linearneuralnetworks.linearregressionfromscratch.LinearRegression;
+import fr.nico.neural.network.djl.linearneuralnetworks.linearregression.fromscratch.LinearRegression;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.function.BinaryOperator;
@@ -25,7 +25,7 @@ import java.util.function.UnaryOperator;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class SoftmaxRegressionFromScratch {
+public class SoftmaxRegression {
 
   private static final int[] SUM_ON_COL_AXIS = {
     1
@@ -81,7 +81,7 @@ public class SoftmaxRegressionFromScratch {
             trainEpochCh3(
                 net::net,
                 trainingSet.getData(manager),
-                SoftmaxRegressionFromScratch::crossEntropy,
+                SoftmaxRegression::crossEntropy,
                 LinearRegression::stochasticGradientDescent,
                 params,
                 inputCount,

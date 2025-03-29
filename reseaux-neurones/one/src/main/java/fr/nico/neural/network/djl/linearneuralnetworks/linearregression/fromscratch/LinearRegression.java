@@ -1,4 +1,4 @@
-package fr.nico.neural.network.djl.linearneuralnetworks.linearregressionfromscratch;
+package fr.nico.neural.network.djl.linearneuralnetworks.linearregression.fromscratch;
 
 import ai.djl.engine.Engine;
 import ai.djl.ndarray.NDArray;

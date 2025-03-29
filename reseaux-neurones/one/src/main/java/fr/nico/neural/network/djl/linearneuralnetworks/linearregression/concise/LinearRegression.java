@@ -1,6 +1,6 @@
-package fr.nico.neural.network.djl.linearneuralnetworks.conciseimplementation;
+package fr.nico.neural.network.djl.linearneuralnetworks.linearregression.concise;
 
-import static fr.nico.neural.network.djl.linearneuralnetworks.linearregressionfromscratch.LinearRegression.syntheticData;
+import static fr.nico.neural.network.djl.linearneuralnetworks.linearregression.fromscratch.LinearRegression.syntheticData;
 
 import ai.djl.Model;
 import ai.djl.metric.Metrics;
@@ -22,7 +22,6 @@ import ai.djl.training.loss.Loss;
 import ai.djl.training.optimizer.Optimizer;
 import ai.djl.training.tracker.Tracker;
 import ai.djl.translate.TranslateException;
-import fr.nico.neural.network.djl.linearneuralnetworks.linearregressionfromscratch.LinearRegression;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -30,7 +29,7 @@ import java.nio.file.Path;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class ConciseImplementation {
+public class LinearRegression {
 
   private static final float[] W = {2, -3.4f};
   private static final float B = 4.2f;
@@ -43,7 +42,9 @@ public class ConciseImplementation {
   public static void main(String[] args) throws TranslateException, IOException {
     try (NDManager manager = NDManager.newBaseManager()) {
       // ============ Génération des données
-      LinearRegression.DataPoints dp = syntheticData(manager, manager.create(W), B, DATASET_SIZE);
+      fr.nico.neural.network.djl.linearneuralnetworks.linearregression.fromscratch.LinearRegression
+              .DataPoints
+          dp = syntheticData(manager, manager.create(W), B, DATASET_SIZE);
 
       // ============ Définition du modèle
       try (Model model = Model.newInstance(MODEL_NAME)) {
@@ -117,7 +118,7 @@ public class ConciseImplementation {
 
   private static void persistModel(Model model) {
     try {
-      Path tempDirectory = Files.createTempDirectory(ConciseImplementation.class.getSimpleName());
+      Path tempDirectory = Files.createTempDirectory(LinearRegression.class.getSimpleName());
       model.setProperty("Epoch", Integer.toString(EPOCHS_COUNT));
       model.save(tempDirectory, MODEL_NAME);
       log.info("Model : {}", model);
