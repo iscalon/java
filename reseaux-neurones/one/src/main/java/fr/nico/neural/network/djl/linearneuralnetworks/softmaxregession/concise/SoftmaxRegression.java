@@ -13,6 +13,7 @@ import ai.djl.training.DefaultTrainingConfig;
 import ai.djl.training.EasyTrain;
 import ai.djl.training.Trainer;
 import ai.djl.training.dataset.Dataset;
+import ai.djl.training.dataset.RandomAccessDataset;
 import ai.djl.training.evaluator.Accuracy;
 import ai.djl.training.listener.TrainingListener;
 import ai.djl.training.loss.Loss;
@@ -29,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SoftmaxRegression {
 
-  private static final int BATCH_SIZE = 256;
+  public static final int BATCH_SIZE = 256;
 
   public static void main(String[] args) throws TranslateException, IOException {
     try (NDManager manager = NDManager.newBaseManager()) {
@@ -86,7 +87,7 @@ public class SoftmaxRegression {
     //    epoch P50: 0,974 s, P90: 16,202 s
   }
 
-  private static Dataset trainingSet() {
+  public static RandomAccessDataset trainingSet() {
     boolean randomShuffle = true;
     return FashionMnist.builder()
         .optUsage(Dataset.Usage.TRAIN)
@@ -95,11 +96,14 @@ public class SoftmaxRegression {
         .build();
   }
 
-  private static Dataset validationSet() {
-    boolean noRandomShuffle = false;
+  public static RandomAccessDataset validationSet() {
+    return validationSet(false);
+  }
+
+  public static RandomAccessDataset validationSet(boolean randomShuffle) {
     return FashionMnist.builder()
         .optUsage(Dataset.Usage.TEST)
-        .setSampling(BATCH_SIZE, noRandomShuffle)
+        .setSampling(BATCH_SIZE, randomShuffle)
         .optLimit(Long.getLong("DATASET_LIMIT", Long.MAX_VALUE))
         .build();
   }
