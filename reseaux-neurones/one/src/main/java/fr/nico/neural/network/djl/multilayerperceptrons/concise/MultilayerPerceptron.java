@@ -53,9 +53,9 @@ public class MultilayerPerceptron {
   private static final Loss CROSS_ENTROPY_LOSS = Loss.softmaxCrossEntropyLoss();
   private static final double[] EPOCHS =
       IntStream.rangeClosed(1, EPOCHS_COUNT).asDoubleStream().toArray();
-  private static final String TRAIN_ACCURACY_EVALUATOR_NAME = "train_epoch_Accuracy";
-  private static final String TRAIN_LOSS_EVALUATOR_NAME = "train_epoch_SoftmaxCrossEntropyLoss";
-  private static final String VALIDATION_ACCURACY_EVALUATOR_NAME = "validate_epoch_Accuracy";
+  public static final String TRAIN_ACCURACY_EVALUATOR_NAME = "train_epoch_Accuracy";
+  public static final String TRAIN_LOSS_EVALUATOR_NAME = "train_epoch_SoftmaxCrossEntropyLoss";
+  public static final String VALIDATION_ACCURACY_EVALUATOR_NAME = "validate_epoch_Accuracy";
 
   private final Map<String, double[]> evaluatorMetrics;
 
