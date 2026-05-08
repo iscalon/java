@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS source_data (
     v_ref BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id BIGINT NOT NULL,
+    user_id TEXT NOT NULL,
     amount DECIMAL(19, 2) NOT NULL,
     status VARCHAR(30) NOT NULL DEFAULT 'PENDING'
 );
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS source_data (
 CREATE TABLE IF NOT EXISTS calculated_result (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     v_ref BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
+    user_id TEXT NOT NULL,
     calculated_amount DECIMAL(19, 2) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
