@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: demo-batch
+  datasource:
+    url: jdbc:h2:mem:batchdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+    h2:
+      console:
+        enabled: true
+        path: /h2-console
+    batch:
+      jdbc:
+        initialize-schema: always
+      job:
+        enabled: true
