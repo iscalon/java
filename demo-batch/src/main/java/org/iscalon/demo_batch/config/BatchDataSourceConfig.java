@@ -9,18 +9,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class BatchDataSourceConfig {
+class BatchDataSourceConfig {
 
   /** Datasource Spring Batch (H2 travail) */
   @Bean
   @ConfigurationProperties("spring.datasource.travail-batch")
-  public DataSourceProperties batchDataSourceProperties() {
+  DataSourceProperties batchDataSourceProperties() {
     return new DataSourceProperties();
   }
 
   @Bean
   @BatchDataSource
-  public DataSource batchDataSource(
+  DataSource batchDataSource(
       @Qualifier("batchDataSourceProperties") DataSourceProperties properties) {
     return properties.initializeDataSourceBuilder().build();
   }

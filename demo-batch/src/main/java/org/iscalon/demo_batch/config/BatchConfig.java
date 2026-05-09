@@ -24,7 +24,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
-public class BatchConfig {
+class BatchConfig {
 
   private static final int PARTITION_COUNT = 10;
 
@@ -32,7 +32,7 @@ public class BatchConfig {
   private static final int CHUNK_SIZE = 500;
 
   @Bean
-  public Job userCalculationJob(
+  Job userCalculationJob(
       JobRepository jobRepository,
       Step prepareInputDataStep,
       Step enrichInputDataStep,
@@ -46,7 +46,7 @@ public class BatchConfig {
   }
 
   @Bean
-  public Step prepareInputDataStep(
+  Step prepareInputDataStep(
       JobRepository jobRepository,
       PlatformTransactionManager transactionManager,
       JdbcTemplate jdbcTemplate) {
@@ -56,7 +56,7 @@ public class BatchConfig {
   }
 
   @Bean
-  public Step enrichInputDataStep(
+  Step enrichInputDataStep(
       JobRepository jobRepository,
       PlatformTransactionManager transactionManager,
       JdbcTemplate jdbcTemplate) {
@@ -66,7 +66,7 @@ public class BatchConfig {
   }
 
   @Bean
-  public Step partitionedUserCalculationStep(
+  Step partitionedUserCalculationStep(
       JobRepository jobRepository,
       Step userCalculationWorkerStep,
       Partitioner userPartitioner,
@@ -80,7 +80,7 @@ public class BatchConfig {
   }
 
   @Bean
-  public Step userCalculationWorkerStep(
+  Step userCalculationWorkerStep(
       JobRepository jobRepository,
       ItemReader<UserWorkUnit> userDocumentsReader,
       CalculationWriter calculationWriter) {
@@ -92,13 +92,13 @@ public class BatchConfig {
   }
 
   @Bean
-  public Partitioner userPartitioner() {
+  Partitioner userPartitioner() {
     return new UserPartitioner(PARTITION_COUNT);
   }
 
   @Bean
   @StepScope
-  public ItemReader<UserWorkUnit> userDocumentsReader(
+  ItemReader<UserWorkUnit> userDocumentsReader(
       JdbcTemplate jdbcTemplate,
       @Value("#{stepExecutionContext['bucket']}") Integer bucket,
       @Value("#{stepExecutionContext['bucketCount']}") Integer bucketCount) {
@@ -106,13 +106,12 @@ public class BatchConfig {
   }
 
   @Bean
-  public CalculationWriter calculationWriter(
-      NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+  CalculationWriter calculationWriter(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
     return new CalculationWriter(namedParameterJdbcTemplate);
   }
 
   @Bean
-  public TaskExecutor batchTaskExecutor() {
+  TaskExecutor batchTaskExecutor() {
     ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
     executor.setCorePoolSize(PARTITION_COUNT);
     executor.setMaxPoolSize(PARTITION_COUNT);
