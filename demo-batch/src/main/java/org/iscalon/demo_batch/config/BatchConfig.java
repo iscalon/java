@@ -14,6 +14,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.ItemReader;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -49,7 +50,7 @@ public class BatchConfig {
   public Step prepareInputDataStep(
       JobRepository jobRepository,
       PlatformTransactionManager transactionManager,
-      JdbcTemplate jdbcTemplate) {
+      @Qualifier("sourceJdbcTemplate") JdbcTemplate jdbcTemplate) {
     return new StepBuilder("prepareInputDataStep", jobRepository)
         .tasklet(new StoredProcedureTasklet(jdbcTemplate, "CALL PROC_INIT_1()"), transactionManager)
         .build();
@@ -59,7 +60,7 @@ public class BatchConfig {
   public Step enrichInputDataStep(
       JobRepository jobRepository,
       PlatformTransactionManager transactionManager,
-      JdbcTemplate jdbcTemplate) {
+      @Qualifier("sourceJdbcTemplate") JdbcTemplate jdbcTemplate) {
     return new StepBuilder("enrichInputDataStep", jobRepository)
         .tasklet(new StoredProcedureTasklet(jdbcTemplate, "CALL PROC_INIT_2()"), transactionManager)
         .build();
@@ -99,7 +100,7 @@ public class BatchConfig {
   @Bean
   @StepScope
   public ItemReader<UserWorkUnit> userDocumentsReader(
-      JdbcTemplate jdbcTemplate,
+      @Qualifier("sourceJdbcTemplate") JdbcTemplate jdbcTemplate,
       @Value("#{stepExecutionContext['bucket']}") Integer bucket,
       @Value("#{stepExecutionContext['bucketCount']}") Integer bucketCount) {
     return new UserDocumentsPagingReader(jdbcTemplate, bucket, bucketCount, CHUNK_SIZE);
@@ -107,7 +108,8 @@ public class BatchConfig {
 
   @Bean
   public CalculationWriter calculationWriter(
-      NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
+      @Qualifier("sourceNamedParameterJdbcTemplate")
+          NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
     return new CalculationWriter(namedParameterJdbcTemplate);
   }
 
