@@ -27,6 +27,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class BatchConfig {
 
   private static final int PARTITION_COUNT = 10;
+
+  /** Nombre maximum d'utilisateurs traités par 1 thread */
   private static final int CHUNK_SIZE = 500;
 
   @Bean

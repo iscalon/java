@@ -77,9 +77,10 @@ public class CalculationWriter implements ItemWriter<UserWorkUnit> {
   @SuppressWarnings("unchecked")
   private void batchInsertResults(List<CalculatedResult> results) {
     if (results.isEmpty()) {
+      log.info("Aucun enregistrement en masse");
       return;
     }
-
+    log.info("[ACCES BDD] : Enregistrement en masse de : {}", results);
     String sql =
         """
             INSERT INTO calculated_result(v_ref, user_id, calculated_amount)

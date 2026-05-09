@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Stream;
+import lombok.extern.slf4j.Slf4j;
 import org.iscalon.demo_batch.domain.UserWorkUnit;
 import org.springframework.batch.infrastructure.item.ExecutionContext;
 import org.springframework.batch.infrastructure.item.ItemStreamReader;
 import org.springframework.jdbc.core.JdbcTemplate;
 
+@Slf4j
 public class UserDocumentsPagingReader implements ItemStreamReader<UserWorkUnit> {
 
   private static final String LAST_USER_ID_KEY = "lastUserId";
@@ -40,7 +42,7 @@ public class UserDocumentsPagingReader implements ItemStreamReader<UserWorkUnit>
     }
 
     UserWorkUnit next = buffer.poll();
-
+    log.info("Ajout de : {} au chunck", next);
     if (next != null) {
       lastUserId = next.userId();
     }
@@ -49,6 +51,10 @@ public class UserDocumentsPagingReader implements ItemStreamReader<UserWorkUnit>
   }
 
   private void loadNextPage() {
+    log.info(
+        "[ACCES BDD] : Chargement de {} nouveaux utilisateurs à partir de l'id : {}",
+        pageSize,
+        lastUserId);
     String sql =
         """
             SELECT
