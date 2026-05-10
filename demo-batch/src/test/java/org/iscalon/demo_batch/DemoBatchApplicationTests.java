@@ -1,12 +1,15 @@
 package org.iscalon.demo_batch;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.times;
 
 import java.util.List;
 import java.util.Set;
@@ -16,7 +19,7 @@ import org.iscalon.demo_batch.domain.CalculatedResult;
 import org.iscalon.demo_batch.domain.UserWorkUnit;
 import org.iscalon.demo_batch.out.repository.CalculRepository;
 import org.iscalon.demo_batch.out.storedprocedure.PourAppelerStoredProcedure;
-import org.iscalon.demo_batch.reader.UserDocumentsPagingReader;
+import org.iscalon.demo_batch.reader.UserLoadingStrategy;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,8 +45,7 @@ class DemoBatchApplicationTests {
   @MockitoBean private PourAppelerStoredProcedure storedProcedures;
   @MockitoBean private CalculRepository calculs;
 
-  @MockitoBean(name = "userDocumentsReader")
-  private UserDocumentsPagingReader reader;
+  @MockitoBean private UserLoadingStrategy users;
 
   @Captor private ArgumentCaptor<List<CalculatedResult>> calculsCaptor;
 
@@ -51,14 +53,20 @@ class DemoBatchApplicationTests {
   void setUp() {
     doNothing().when(storedProcedures).appeler(anyString());
     doNothing().when(calculs).batchInsertResults(anyList());
+    doReturn("TEST_LOADER").when(users).key();
   }
 
   @Test
   void should_run_job() throws Exception {
-    when(reader.read())
-        .thenReturn(new UserWorkUnit("Y0001", Set.of(1L, 2L)))
-        .thenReturn(new UserWorkUnit("Y0002", Set.of(3L, 4L, 5L)))
-        .thenReturn(null);
+    doAnswer(
+            invocation ->
+                prepareResponseFor(
+                    invocation.getArgument(0),
+                    invocation.getArgument(1),
+                    invocation.getArgument(2),
+                    invocation.getArgument(3)))
+        .when(users)
+        .load(anyInt(), anyInt(), anyInt(), any());
 
     JobParameters params =
         new JobParametersBuilder().addString("date", "2026-12-10").toJobParameters();
@@ -73,18 +81,40 @@ class DemoBatchApplicationTests {
     InOrder inOrder = inOrder(storedProcedures, calculs);
     inOrder.verify(storedProcedures).appeler("CALL PROC_INIT_1()");
     inOrder.verify(storedProcedures).appeler("CALL PROC_INIT_2()");
-    inOrder.verify(calculs, atLeastOnce()).batchInsertResults(calculsCaptor.capture());
+    // 2 appels d'insertions en masse car les 2 utilisateurs vont être répartis sur 2 buckets
+    // différents (v. méthode 'prepareResponseFor' plus bas).
+    // Les 2 résultats calculés pour l'utilisateur 1 seront écrits d'un coup
+    // Les 3 résultats calculés pour l'utilisateur 2 seront écrits d'un coup
+    inOrder.verify(calculs, times(2)).batchInsertResults(calculsCaptor.capture());
     List<List<CalculatedResult>> captorAllValues = calculsCaptor.getAllValues();
+
+    assertThat(captorAllValues).extracting(List::size).containsExactlyInAnyOrder(2, 3);
 
     List<CalculatedResult> allResults = captorAllValues.stream().flatMap(List::stream).toList();
     assertThat(allResults)
         .hasSize(5)
         .usingRecursiveFieldByFieldElementComparatorIgnoringFields("amount")
         .containsExactlyInAnyOrder(
+            // 2 résultats pour l'utilisateur 1
             new CalculatedResult("Y0001", 1L, null),
             new CalculatedResult("Y0001", 2L, null),
+            // 3 résultats pour l'utilisateur 2
             new CalculatedResult("Y0002", 3L, null),
             new CalculatedResult("Y0002", 4L, null),
             new CalculatedResult("Y0002", 5L, null));
+  }
+
+  private List<UserWorkUnit> prepareResponseFor(
+      int bucket, int bucketCount, int pageSize, String lastUserId) {
+    if (lastUserId != null) {
+      return List.of();
+    }
+    if (bucket == 1) {
+      return List.of(new UserWorkUnit("Y0001", Set.of(1L, 2L)));
+    }
+    if (bucket == 2) {
+      return List.of(new UserWorkUnit("Y0002", Set.of(3L, 4L, 5L)));
+    }
+    return List.of();
   }
 }
