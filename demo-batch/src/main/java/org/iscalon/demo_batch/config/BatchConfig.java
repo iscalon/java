@@ -16,6 +16,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.Step;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.infrastructure.item.ItemReader;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -85,7 +86,7 @@ class BatchConfig {
   @Bean
   Step userCalculationWorkerStep(
       JobRepository jobRepository,
-      ItemReader<UserWorkUnit> userDocumentsReader,
+      @Qualifier("userDocumentsReader") ItemReader<UserWorkUnit> userDocumentsReader,
       CalculationWriter calculationWriter) {
     return new StepBuilder("userCalculationWorkerStep", jobRepository)
         .<UserWorkUnit, UserWorkUnit>chunk(CHUNK_SIZE)
@@ -99,7 +100,7 @@ class BatchConfig {
     return new UserPartitioner(PARTITION_COUNT);
   }
 
-  @Bean
+  @Bean(name = "userDocumentsReader")
   @StepScope
   ItemReader<UserWorkUnit> userDocumentsReader(
       JdbcTemplate jdbcTemplate,

@@ -6,7 +6,6 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.annotation.AliasFor;
@@ -17,7 +16,6 @@ import org.springframework.core.annotation.AliasFor;
 @Inherited
 @SpringBatchTest
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public @interface BatchIntegrationTest {
 
   @AliasFor(annotation = SpringBootTest.class, attribute = "properties")
