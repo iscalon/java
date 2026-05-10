@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: demo-batch
   h2:
     console:
       enabled: true
@@ -23,8 +21,8 @@ spring:
     jdbc:
       initialize-schema: embedded
     job:
-      enabled: true
+      enabled: false
 
 logging:
   level:
-    org.springframework.jdbc.datasource.init: INFO
+    org.springframework.jdbc.datasource.init: DEBUG

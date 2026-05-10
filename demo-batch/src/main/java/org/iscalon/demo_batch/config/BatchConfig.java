@@ -1,6 +1,8 @@
 package org.iscalon.demo_batch.config;
 
 import org.iscalon.demo_batch.domain.UserWorkUnit;
+import org.iscalon.demo_batch.out.repository.CalculRepository;
+import org.iscalon.demo_batch.out.storedprocedure.PourAppelerStoredProcedure;
 import org.iscalon.demo_batch.partition.UserPartitioner;
 import org.iscalon.demo_batch.reader.UserDocumentsPagingReader;
 import org.iscalon.demo_batch.tasklet.StoredProcedureTasklet;
@@ -19,7 +21,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -51,9 +52,9 @@ class BatchConfig {
   Step prepareInputDataStep(
       JobRepository jobRepository,
       PlatformTransactionManager transactionManager,
-      JdbcTemplate jdbcTemplate) {
+      PourAppelerStoredProcedure service) {
     return new StepBuilder("prepareInputDataStep", jobRepository)
-        .tasklet(new StoredProcedureTasklet(jdbcTemplate, "CALL PROC_INIT_1()"), transactionManager)
+        .tasklet(new StoredProcedureTasklet(service, "CALL PROC_INIT_1()"), transactionManager)
         .build();
   }
 
@@ -61,9 +62,9 @@ class BatchConfig {
   Step enrichInputDataStep(
       JobRepository jobRepository,
       PlatformTransactionManager transactionManager,
-      JdbcTemplate jdbcTemplate) {
+      PourAppelerStoredProcedure service) {
     return new StepBuilder("enrichInputDataStep", jobRepository)
-        .tasklet(new StoredProcedureTasklet(jdbcTemplate, "CALL PROC_INIT_2()"), transactionManager)
+        .tasklet(new StoredProcedureTasklet(service, "CALL PROC_INIT_2()"), transactionManager)
         .build();
   }
 
@@ -108,8 +109,8 @@ class BatchConfig {
   }
 
   @Bean
-  CalculationWriter calculationWriter(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-    return new CalculationWriter(namedParameterJdbcTemplate);
+  CalculationWriter calculationWriter(CalculRepository repository) {
+    return new CalculationWriter(repository);
   }
 
   @Bean

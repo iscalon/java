@@ -8,21 +8,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.iscalon.demo_batch.domain.CalculatedResult;
 import org.iscalon.demo_batch.domain.UserWorkUnit;
+import org.iscalon.demo_batch.out.repository.CalculRepository;
 import org.springframework.batch.infrastructure.item.Chunk;
 import org.springframework.batch.infrastructure.item.ItemWriter;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 @Slf4j
+@RequiredArgsConstructor
 public class CalculationWriter implements ItemWriter<UserWorkUnit> {
 
-  private final NamedParameterJdbcTemplate jdbcTemplate;
-
-  public CalculationWriter(NamedParameterJdbcTemplate jdbcTemplate) {
-    this.jdbcTemplate = jdbcTemplate;
-  }
+  private final CalculRepository repository;
 
   @Override
   public void write(Chunk<? extends UserWorkUnit> chunk) {
@@ -42,7 +40,7 @@ public class CalculationWriter implements ItemWriter<UserWorkUnit> {
             .flatMap(List::stream)
             .toList();
 
-    batchInsertResults(results);
+    repository.batchInsertResults(results);
   }
 
   private Map<Long, DocumentData> loadDocumentData(Set<Long> documentIds) {
@@ -72,35 +70,6 @@ public class CalculationWriter implements ItemWriter<UserWorkUnit> {
     }
 
     return results;
-  }
-
-  @SuppressWarnings("unchecked")
-  private void batchInsertResults(List<CalculatedResult> results) {
-    if (results.isEmpty()) {
-      log.info("Aucun enregistrement en masse");
-      return;
-    }
-    log.info("[ACCES BDD] : Enregistrement en masse de : {}", results);
-    String sql =
-        """
-            INSERT INTO calculated_result(v_ref, user_id, calculated_amount)
-            VALUES (:vRef, :userId, :calculatedAmount)
-            """;
-
-    Map<String, ?>[] batchParams =
-        results.stream()
-            .map(
-                result ->
-                    Map.of(
-                        "vRef",
-                        result.inputDataId(),
-                        "userId",
-                        result.userId(),
-                        "calculatedAmount",
-                        result.amount()))
-            .toArray(Map[]::new);
-
-    jdbcTemplate.batchUpdate(sql, batchParams);
   }
 
   record DocumentData(double value) {}
