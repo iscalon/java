@@ -19,11 +19,11 @@ spring:
       password:
       driver-class-name: org.h2.Driver
 
-    batch:
-      jdbc:
-        initialize-schema: embedded
-      job:
-        enabled: true
+  batch:
+    jdbc:
+      initialize-schema: embedded
+    job:
+      enabled: true
 
 logging:
   level:

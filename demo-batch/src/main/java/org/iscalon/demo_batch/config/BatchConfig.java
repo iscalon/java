@@ -34,11 +34,13 @@ class BatchConfig {
   @Bean
   Job userCalculationJob(
       JobRepository jobRepository,
+      SingleExecutionJobExecutionListener listener,
       Step prepareInputDataStep,
       Step enrichInputDataStep,
       Step partitionedUserCalculationStep) {
     return new JobBuilder("userCalculationJob", jobRepository)
         .incrementer(new RunIdIncrementer())
+        .listener(listener)
         .start(prepareInputDataStep)
         .next(enrichInputDataStep)
         .next(partitionedUserCalculationStep)
