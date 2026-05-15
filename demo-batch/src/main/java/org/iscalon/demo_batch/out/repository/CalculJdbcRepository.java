@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 class CalculJdbcRepository implements CalculRepository {
 
-  private final NamedParameterJdbcTemplate jdbcTemplate;
+  private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
   @Override
   @SuppressWarnings("unchecked")
@@ -42,6 +42,6 @@ class CalculJdbcRepository implements CalculRepository {
                         result.amount()))
             .toArray(Map[]::new);
 
-    jdbcTemplate.batchUpdate(sql, batchParams);
+    namedParameterJdbcTemplate.batchUpdate(sql, batchParams);
   }
 }
