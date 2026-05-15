@@ -62,8 +62,6 @@ class DemoBatchApplicationTests {
             invocation ->
                 prepareResponseFor(
                     invocation.getArgument(0),
-                    invocation.getArgument(1),
-                    invocation.getArgument(2),
                     invocation.getArgument(3)))
         .when(users)
         .load(anyInt(), anyInt(), anyInt(), any());
@@ -79,8 +77,8 @@ class DemoBatchApplicationTests {
 
   private void assertBatchResults() {
     InOrder inOrder = inOrder(storedProcedures, calculs);
-    inOrder.verify(storedProcedures).appeler("CALL PROC_INIT_1()");
-    inOrder.verify(storedProcedures).appeler("CALL PROC_INIT_2()");
+    inOrder.verify(storedProcedures).appeler("PROC_INIT_1");
+    inOrder.verify(storedProcedures).appeler("PROC_INIT_2");
     // 2 appels d'insertions en masse car les 2 utilisateurs vont être répartis sur 2 buckets
     // différents (v. méthode 'prepareResponseFor' plus bas).
     // Les 2 résultats calculés pour l'utilisateur 1 seront écrits d'un coup
@@ -104,8 +102,7 @@ class DemoBatchApplicationTests {
             new CalculatedResult("Y0002", 5L, null));
   }
 
-  private List<UserWorkUnit> prepareResponseFor(
-      int bucket, int bucketCount, int pageSize, String lastUserId) {
+  private List<UserWorkUnit> prepareResponseFor(int bucket, String lastUserId) {
     if (lastUserId != null) {
       return List.of();
     }
