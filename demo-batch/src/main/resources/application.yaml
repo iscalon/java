@@ -27,4 +27,5 @@ spring:
 
 logging:
   level:
+    org.iscalon.demo_batch: DEBUG
     org.springframework.jdbc.datasource.init: INFO

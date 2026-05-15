@@ -55,7 +55,7 @@ class BatchConfig {
       PlatformTransactionManager transactionManager,
       PourAppelerStoredProcedure service) {
     return new StepBuilder("prepareInputDataStep", jobRepository)
-        .tasklet(new StoredProcedureTasklet(service, "CALL PROC_INIT_1()"), transactionManager)
+        .tasklet(new StoredProcedureTasklet(service, "PROC_INIT_1"), transactionManager)
         .build();
   }
 
@@ -65,7 +65,7 @@ class BatchConfig {
       PlatformTransactionManager transactionManager,
       PourAppelerStoredProcedure service) {
     return new StepBuilder("enrichInputDataStep", jobRepository)
-        .tasklet(new StoredProcedureTasklet(service, "CALL PROC_INIT_2()"), transactionManager)
+        .tasklet(new StoredProcedureTasklet(service, "PROC_INIT_2"), transactionManager)
         .build();
   }
 
