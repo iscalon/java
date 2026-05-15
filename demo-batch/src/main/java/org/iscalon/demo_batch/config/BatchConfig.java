@@ -120,7 +120,7 @@ class BatchConfig {
     executor.setCorePoolSize(PARTITION_COUNT);
     executor.setMaxPoolSize(PARTITION_COUNT);
     executor.setQueueCapacity(0);
-    executor.setThreadNamePrefix("batch-user-");
+    executor.setThreadNamePrefix("thread-#");
     executor.initialize();
     return executor;
   }
